@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
+    <!-- <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=popins&display=swap"> -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+      integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <title>Dictionary</title>
+  </head>
+  <body>
+    <audio id="sound"></audio>
+    <div class="container">
+      <div class="search-bar">
+        <input type="text" placeholder="type the word here.." id="input-word" />
+        <button id="search-btn">search</button>
+      </div>
+      <div class="result"></div>
+    </div>
+
+    <script>
+      const url = "https://api.dictionaryapi.dev/api/v2/entries/en/";
+      const result = document.querySelector(".result");
+      const sound = document.getElementById("sound");
+      const btn = document.querySelector("#search-btn");
+
+      btn.addEventListener("click", () => {
+        let inpword = document.querySelector("#input-word").value;
+        // console.log(inpword);
+        fetch(`${url}${inpword}`)
+          .then((response) => response.json())
+          .then((data) => {
+            console.log(data);
+            result.innerHTML = ` 
+                <div class="word">
+                <h3>${inpword}</h3>
+                <button onclick="playSoud()">
+                    <i class="fas fa-volume-up"></i>
+                </button>
+            </div>
+            <div class="details">
+                <p>${data[0].meanings[0].partOfSpeech}</p>
+                <p>/${data[0].phonetics[1].text}/</p>
+            </div>
+            <p class="word-meaning">
+                ${data[0].meanings[0].definitions[0].definition}
+            </p>
+            <p class="word-ex">
+                ${data[0].meanings[0].definitions[0].example || ""}
+            </p>`;
+            sound.setAttribute("src", `${data[0].phonetics[0].audio}`);
+            // console.log(sound);
+          })
+          .catch( () => {
+            result.innerHTML = `<h2 class="error-msg">word not found</h2>`
+          })
+      });
+
+      function playSoud(){
+        sound.play()
+      }
+    </script>
+  </body>
+</html>
